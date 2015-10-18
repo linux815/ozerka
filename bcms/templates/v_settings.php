@@ -52,7 +52,7 @@
   </p>
   <p>
     <label for="template" style="float: left;">Имя шаблона</label> &nbsp;
-    <a class="tooltip" href="#">помощь<span class="custom help"><img src="images/icons/Help.png" alt="Помощь" height="48" width="48" /><em>Знаете ли вы что?</em>По умолчанию доступны шаблоны: default, school, business, mysite</span></a>
+    <a class="tooltip" href="#">помощь<span class="custom help"><img src="images/icons/Help.png" alt="Помощь" height="48" width="48" /><em>Знаете ли вы что?</em>По умолчанию доступны шаблоны: default, ozerka</span></a>
   </p>
   <p>
     <input type="input" id="template" name="template" size="40" value="<?php echo $template; ?>">
