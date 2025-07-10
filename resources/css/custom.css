@@ -28,9 +28,11 @@ body {
 }
 
 .logo img {
-    max-height: 200px;
-    display: block;
-    margin: 1.5rem auto;
+    width: 790px;
+    height: 380px;
+    background: url(../img/logo.jpg);
+    background-size: 790px 380px;
+    margin: 15px auto 10px;
 }
 
 .sidebar-menu {

@@ -1,132 +1,148 @@
 <?php
 /**
- * v_main.php - основной шаблон
- * ================
- *  $content - массив, содержащий текущую страницу (таблица page)
- *  Содержит: 
- *  id_page - номер страницы
- *  title - заголовок страницы
- *  text - текст страницы, созданный в редакторе TinyMCE
- *  date - дата последнего изменения/создания страницы
- * 	review - модуль обратная связь (0 выключен, 1 включен)
- *  news - модуль новости (0 выключен, 1 включен)
- *  ghost - модуль гостевая книга (0 выключен, 1 включен)
- *  ================
- *  $settings - массив, содержащий загруженную таблицу settings
- *  Содержит:
- * 	review - модуль обратная связь (0 выключен, 1 включен)
- *  news - модуль новости (0 выключен, 1 включен)
- *  ghost - модуль гостевая книга (0 выключен, 1 включен)
+ * v_main.php — основной пользовательский шаблон
+ *
+ * @var string $title
+ * @var array $settings — настройки сайта
+ * @var array $pages — все страницы
+ * @var string $content — контент страницы
+ * @var array $temp — данные текущей страницы
  */
+$currentId = $_GET['id'] ?? 1;
 ?>
+
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <link rel="shortcut icon" href="templates/ozerka/img/main_logo.ico" type="image/x-icon">
-    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
-    <title><?= $title ?></title>
-    <meta name="keywords" content="<?= $settings['keywords'] ?>" />
-    <meta name="description" content="<?= $settings['description'] ?>" />
-    <link href="templates/<?= $settings['template'] ?>/css/style.css" rel="stylesheet">
-    <script src='https://www.google.com/recaptcha/api.js'></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $(window).scroll(function () {
-                if ($(this).scrollTop() > 100) {
-                    $('.scrollup').fadeIn();
-                } else {
-                    $('.scrollup').fadeOut();
-                }
-            });
-            $('.scrollup').click(function () {
-                $("html, body").animate({scrollTop: 0}, 600);
-                return false;
-            });
-        });
-    </script>
-  </head>
-  <body>
-    <div class="wrapper">
-      <div class="box effect8">
-        <header class="header">
-          <div class="headNav">
-            <a href="index.php?c=view&id=1">главная</a>
-            <a href="index.php?c=view&id=2">новости</a>
-            <a href="index.php?c=view&id=30">гостевая книга</a>
-            <a href='index.php?c=view&id=31' >обратная связь</a>
-          </div><!-- #headNav-->	
+<html lang="ru">
+<head>
+    <meta charset="utf-8"/>
+    <title><?= htmlspecialchars($title) ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="keywords" content="<?= htmlspecialchars($settings['keywords']) ?>"/>
+    <meta name="description" content="<?= htmlspecialchars($settings['description']) ?>"/>
+    <link rel="shortcut icon" href="templates/<?= htmlspecialchars($settings['template']) ?>/img/main_logo.ico"
+          type="image/x-icon"/>
 
-          <div class="logo"></div><!-- .logo -->		
-        </header><!-- .header-->
+    <?= $viteAssets->css('css/main.css') ?>
+    <script type="module" src="<?= htmlspecialchars($viteAssets->asset('js/main.js'), ENT_QUOTES, 'UTF-8') ?>"></script>
+    <?= $viteAssets->css('css/custom.css') ?>
+</head>
+<body>
 
-        <div class="middle">
-          <div class="container">
-            <main class="content">
-              <h1 class="boxTitle"><?= $temp['title'] ?></h1>	
-              <?php if ($_GET['id'] == 1): echo "";
-              else: ?>
-                  <p align="right" style="margin-right: 10px;"><a href="#" onclick='history.back();
-                              return false;'>Вернуться</a></p>
-              <?php endif; ?>
+<div class="main-wrapper">
 
-              <div id="content">
-                <?php echo $content; ?>
-              </div> 
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom shadow-sm">
+        <div class="container justify-content-center">
+            <div class="collapse navbar-collapse justify-content-between">
+                <ul class="navbar-nav mx-auto">
+                    <?php
+                    $excludePageIds = [];
+                    if (empty($settings['news'])) $excludePageIds[] = 2;
+                    if (empty($settings['ghost'])) $excludePageIds[] = 30;
+                    if (empty($settings['review'])) $excludePageIds[] = 31;
 
-            </main><!-- .content -->
-          </div><!-- .container-->
+                    foreach ($pages as $page) {
+                        if (in_array((int)$page['id_page'], $excludePageIds, true)) {
+                            continue;
+                        }
 
-          <aside class="left-sidebar">
-              <?php
-              if ($_GET['id'] > 1):
-                  ?>
-<?php else: echo "";
-endif; ?>
-            <h1 class="boxTitle">Меню сайта</h1>
-            <div id="menuDiv">
-              <ul class="me"> 
-                      <?php foreach ($pages as $page): ?>
-                    <li class=m>
-                      <a class=m href="index.php?c=view&id=<?= $page['id_page'] ?>">
-                      <?= $page['title'] ?>
-                      </a>
-<?php endforeach; ?>
-              </ul> 
-              <script type="text/javascript" src="templates/<?= $settings['template'] ?>/js/script.js"></script> 
-            </div><!-- #menuDiv -->
-          </aside><!-- .left-sidebar -->
-          <!--
-          <aside class="right-sidebar">
-            <h1 class="boxTitle">Новости</h1>
-          </aside><!-- .right-sidebar -->
-        </div><!-- .middle-->
+                        $idPage = (int)$page['id_page'];
+                        $title = htmlspecialchars($page['title']);
 
-      </div><!-- .wrapper -->
+                        if (!in_array($idPage, [1, 2, 3, 30, 31], false)) {
+                            continue;
+                        }
 
-      <footer class="footer">
+                        $active = ($currentId == $idPage) ? 'active' : '';
+                        echo "<li class='nav-item'><a class='nav-link $active' href='index.php?c=view&id=$idPage'>$title</a></li>";
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Логотип -->
+    <div class="logo text-center py-10">
+        <img src="assets/img/logo.jpg" alt="Логотип сайта"/>
+    </div>
+
+    <!-- Контент и меню сайта -->
+    <div class="container px-4">
+        <div class="row">
+            <!-- Меню сайта -->
+            <aside class="col-md-3 mb-4">
+                <div class="sidebar-menu">
+                    <h5 class="mb-3">📂 Меню сайта</h5>
+                    <ul class="list-unstyled mb-0">
+                        <?php
+                        foreach ($pages as $page):
+                            $idPage = (int)$page['id_page'];
+                            if (in_array($idPage, $excludePageIds, true)) continue;
+
+                            $active = ($currentId == $idPage) ? 'active' : '';
+                            ?>
+                            <li>
+                                <a class="<?= $active ?>"
+                                   href="index.php?c=view&id=<?= $idPage ?>">
+                                    <?= htmlspecialchars($page['title']) ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- Основной контент -->
+            <main class="col-md-9">
+                <div class="content-box">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="index.php?c=view&id=1">Главная</a></li>
+                            <li class="breadcrumb-item active" aria-current="page"><?= htmlspecialchars($temp['title']) ?></li>
+                        </ol>
+                    </nav>
+
+                    <?php if ((int)$currentId !== 1): ?>
+                        <p class="text-end mb-3">
+                            <a href="#" onclick="history.back(); return false;">Вернуться</a>
+                        </p>
+                    <?php endif; ?>
+
+                    <div id="content"><?= $content ?></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Футер: сохранённый старый -->
+    <footer class="footer mt-5 py-4 bg-light text-center small border-top">
         <p>
-          <a href="index.php?c=view&id=30">Задать вопрос в гостевой</a>
-          &nbsp;-&nbsp;
-          <a href="" onClick="alert('Вопросы отсутствуют.')">Часто задаваемые вопросы</a>
-          &nbsp;-&nbsp;
-          <a href="index.php?c=view&id=31">Обратная связь</a>
-          &nbsp;-&nbsp;
-          <a href="/bcms">Администраторский раздел</a>
-        </p>  
-        <p>Copyright © 2010-2015. Баженов Иван & МОУ "Новоозерновская основная общеобразовательная школа".</p>  
+            <a href="index.php?c=view&id=30">Задать вопрос в гостевой</a>
+            &nbsp;-&nbsp;
+            <a href="#" onclick="alert('Вопросы отсутствуют.')">Часто задаваемые вопросы</a>
+            &nbsp;-&nbsp;
+            <a href="index.php?c=view&id=31">Обратная связь</a>
+            &nbsp;-&nbsp;
+            <a href="/bcms">Администраторский раздел</a>
+        </p>
+        <p>Copyright © 2010–<?= date('Y') ?>. Баженов Иван & МОУ "Новоозерновская основная общеобразовательная школа".</p>
         <p>
-          Адрес: 662820, Красноярский край,
-          Ермаковский район,
-          п. Новоозерное,
-          ул. Центральная,10
+            Адрес: 662820, Красноярский край,
+            Ермаковский район,
+            п. Новоозерное,
+            ул. Центральная,10
         </p>
         <p>
-          Телефон: (39138) 2-43-71,  E-mail: <a href="mailto: oze@list.ru">oze@list.ru</a>
+            Телефон: (39138) 2-43-71, E-mail: <a href="mailto:oze@list.ru">oze@list.ru</a>
         </p>
-    </div><!-- .effect8 -->
-  </footer><!-- .footer -->
-  <a href="#" class="scrollup">Наверх</a>
+    </footer>
+
+</div>
+
+<!-- Кнопка наверх -->
+<div class="scrollup" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" title="Наверх" role="button"
+     aria-label="Наверх"></div>
+
 </body>
 </html>

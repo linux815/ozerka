@@ -34,7 +34,7 @@ abstract class BaseSecond extends Controller
     {
         $database = new DatabaseModel();
 
-        $this->title = 'bCMS';
+        $this->title = 'Новоозерновская основная общеобразовательная школа';
         $this->content = '';
 
         $userModel = UserModel::Instance();

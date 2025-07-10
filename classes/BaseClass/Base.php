@@ -35,7 +35,7 @@ abstract class Base extends Controller
      */
     protected function onInput(): void
     {
-        $this->title = 'Сайт школы';
+        $this->title = 'Новоозерновская основная общеобразовательная школа';
         $this->content = '';
 
         $database = new DatabaseModel();

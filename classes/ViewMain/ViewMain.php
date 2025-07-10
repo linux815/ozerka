@@ -36,7 +36,7 @@ class ViewMain extends Base
         }
 
         $this->pageData = $database->selectPageId($id);
-        $this->title = ($this->pageData['title'] ?? 'Без названия') . ' - Сайт школы';
+        $this->title = ($this->pageData['title'] ?? 'Без названия') . ' - Новоозерновская основная общеобразовательная школа';
 
         if ($this->pageData['delete'] === 1) {
             header('Location: index.php?c=view&id=1');
